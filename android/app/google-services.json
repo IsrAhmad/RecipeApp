@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "184576980794",
+    "project_id": "grad-project-b39c4",
+    "storage_bucket": "grad-project-b39c4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184576980794:android:44f7f8f52ec9618a6f0203",
+        "android_client_info": {
+          "package_name": "com.example.firebase_salma"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184576980794-5pje3trjlufr9o8kgqb95rhrfsinavtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBivhVluc2Y9GAZjWg5Zcq6GoHPyyfn10g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184576980794-5pje3trjlufr9o8kgqb95rhrfsinavtl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:184576980794:android:93cdf6909ac7bbbd6f0203",
+        "android_client_info": {
+          "package_name": "com.example.salmagrad"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "184576980794-5pje3trjlufr9o8kgqb95rhrfsinavtl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBivhVluc2Y9GAZjWg5Zcq6GoHPyyfn10g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "184576980794-5pje3trjlufr9o8kgqb95rhrfsinavtl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

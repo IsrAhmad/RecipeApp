@@ -5,6 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:salmagrad/Add_Ing_Search_2.dart';
 import 'package:salmagrad/HOME.dart';
 import 'package:salmagrad/PAGE.dart';
 import 'package:salmagrad/LOGIN.dart';
@@ -31,6 +32,8 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:searchfield/searchfield.dart';
 // import 'package:flutter_tabler_icons/flutter_tabler_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'Add_Ingredients_Search.dart';
 
 class Add2 extends StatefulWidget {
   @override
@@ -184,6 +187,7 @@ class _Add2State extends State<Add2> {
           children: [
             Column(
               children: [
+                // AddIng(),
         
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15.0,40.0,15.0,15.0),
@@ -253,7 +257,9 @@ class _Add2State extends State<Add2> {
                     print(mainingredients);
                   });
                 },
+
               ),
+
               // TextFormField(
               //   decoration: new InputDecoration(
               //     labelText: "Main Ingredients",
@@ -271,6 +277,25 @@ class _Add2State extends State<Add2> {
               //     }
               //   },
               // ),
+            ),
+            TextButton( child: Text('Add Ingredient Screen'),
+              style: ButtonStyle(
+                  padding: MaterialStateProperty.all(
+                      EdgeInsets.all(10.0)),
+                  backgroundColor: MaterialStateProperty.all(
+                      Color(0xffBC1017)),
+                  foregroundColor: MaterialStateProperty.all(
+                      Colors.white),
+                  shape: MaterialStateProperty.all(
+                      RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20.0)
+                      ))
+              ),
+              onPressed: () {     Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => AddIng()),
+              );},
             ),
             Padding(
               padding: const EdgeInsets.all(15.0),
@@ -314,6 +339,7 @@ class _Add2State extends State<Add2> {
               ),
 
             ),
+
             Container(
                 child: Wrap(
                   spacing: 5.0,

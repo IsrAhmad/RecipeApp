@@ -1,4 +1,5 @@
 import 'dart:io';
+
 // import 'package:path/path.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -14,18 +15,12 @@ import 'package:salmagrad/SIGN%20UP.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:image_picker/image_picker.dart';
 
-
-
 class signup extends StatefulWidget {
   @override
   _signupState createState() => _signupState();
 }
 
-
-
 class _signupState extends State<signup> {
-
-
 //   uploadImage()async{
 //   // String fileName = basename(_image.path);
 //    final ref= FirebaseStorage.instance.ref().child('user_image').child('/folderName/$_image');
@@ -41,6 +36,11 @@ class _signupState extends State<signup> {
   var _firebase = Firestore.instance;
   var docId;
   String username, pass, email, gender, birthday;
+  List<dynamic> savedRecipes = [
+    Column(
+      children: [],
+    ),
+  ];
 
   bool spinner = false;
   final _auth = FirebaseAuth.instance;
@@ -52,6 +52,7 @@ class _signupState extends State<signup> {
   var g = Colors.black54;
   File _image;
   final picker = ImagePicker();
+
   Future getImage(ImageSource src) async {
     final pickedFile = await picker.getImage(source: src);
     setState(() {
@@ -62,7 +63,6 @@ class _signupState extends State<signup> {
       }
     });
   }
-
 
   File _imageFile;
 
@@ -154,8 +154,6 @@ class _signupState extends State<signup> {
                                           ),
                                           borderRadius:
                                               BorderRadius.circular(16.0),
-
-
                                         ),
                                       ))),
                               /////////////////////////////////////////////////////////////////////////
@@ -419,11 +417,14 @@ class _signupState extends State<signup> {
                                 padding: const EdgeInsets.all(26.0),
                                 child: GestureDetector(
                                   onTap: () async {
-
-                                    final ref= FirebaseStorage.instance.ref().child('user_image').child('/folderName/$_image');
+                                    final ref = FirebaseStorage.instance
+                                        .ref()
+                                        .child('user_image')
+                                        .child('/folderName/$_image');
                                     await ref.putFile(_image);
                                     final url = await ref.getDownloadURL();
-                                    print("//////////////////////////////////////////////////////////////////////////url:$url");
+                                    print(
+                                        "//////////////////////////////////////////////////////////////////////////url:$url");
                                     print({
                                       'username': username,
                                       'email': email,
@@ -433,8 +434,6 @@ class _signupState extends State<signup> {
                                       'imageurl': url,
                                     });
 
-
-
                                     await _firebase.collection('Users').add({
                                       'username': username,
                                       'email': email,
@@ -442,6 +441,7 @@ class _signupState extends State<signup> {
                                       'birthday': _dateTime,
                                       'gender': gender,
                                       'imageurl': url,
+                                      'saved recipes': savedRecipes,
                                     });
                                     // DocumentReference docRef = await _firebase
                                     //     .collection('Ingradients')
@@ -482,7 +482,6 @@ class _signupState extends State<signup> {
                                             ),
                                           );
                                         } else {
-
                                           await _auth
                                               .createUserWithEmailAndPassword(
                                                   email: email, password: pass);
@@ -651,8 +650,7 @@ class _signupState extends State<signup> {
               ),
               FlatButton.icon(
                 onPressed: () async {
-                  await
-                  getImage(ImageSource.gallery);
+                  await getImage(ImageSource.gallery);
                 },
                 icon: Icon(Icons.image),
                 label: Text('Gallery'),
@@ -664,5 +662,3 @@ class _signupState extends State<signup> {
     );
   }
 }
-
-

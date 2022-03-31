@@ -1,11 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:like_button/like_button.dart';
-
+import 'package:salmagrad/HOME.dart';
+import 'package:salmagrad/PROFILE.dart';
+import 'package:salmagrad/recipe_card.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:salmagrad/KAN%20ADD.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:salmagrad/SIGN UP.dart';
+import 'package:salmagrad/LOGIN.dart';
 
 //////////////////////////////////////////////////////////////////////////////////url launcher
 
@@ -67,7 +72,8 @@ class _LikeState extends State<Like> {
 
 
 class BMark extends StatefulWidget {
-
+  Recipe recipe;
+  BMark({this.recipe});
 
   @override
   _BMarkState createState() => _BMarkState();
@@ -87,7 +93,7 @@ class _BMarkState extends State<BMark> {
 
       child: LikeButton(
         size: 30,
-        isLiked: isLiked,
+        isLiked: widget.recipe.isSaved == true,
         // likeCount: likeCount,
         circleColor: CircleColor(end: Colors.redAccent, start: Colors.red),
         bubblesColor: BubblesColor(
@@ -102,12 +108,19 @@ class _BMarkState extends State<BMark> {
             size: 30,
           );
         },
-        onTap: (isLiked) async{
-          // likeCount += this.isLiked ? 1 : 0;
-          // Future.delayed(animationDuration).then((_) => setState(() {}));
+        onTap: (isSaved) async{
+          FirebaseUser user = await FirebaseAuth.instance.currentUser();
 
-          return !isLiked;
-        },
+          if(!isSaved) {
+            await Firestore.instance.collection('Saves').document(widget.recipe.id+'_'+user.uid).setData({"recipeID": widget.recipe.id,"userID": user.uid});
+            await Firestore.instance.collection('Recipes').document(widget.recipe.id).updateData({"saves": FieldValue.increment(1)});
+          } else {
+            await Firestore.instance.collection('Saves').document(widget.recipe.id+'_'+user.uid).delete();
+            await Firestore.instance.collection('Recipes').document(widget.recipe.id).updateData({"saves": FieldValue.increment(-1)});
+          }
+          widget.recipe.isSaved = !isSaved;
+          return widget.recipe.isSaved;
+        },//BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB
       ),
     );
   }
@@ -169,6 +182,8 @@ class Recipe {
   var destination_link;
   var category;
   var likes;
+  var isSaved;
+  var isLiked;
 
   Recipe.FS(document) {
     id=document.documentID;
@@ -206,11 +221,26 @@ class RecipePage extends StatefulWidget {
 
 class _RecipePageState extends State<RecipePage> {
   var initialIndex = 0;
+  FirebaseUser user;
   get id => widget.recipe.id;
 
   void _launchURL() async {
     if (!await launch(widget.recipe.destination_link))
       throw 'Could not launch $widget.destination_link';
+  }
+
+  Future<void> loadSaveAndLikeData() async {
+    user = await FirebaseAuth.instance.currentUser();
+    var isSaved = (await Firestore.instance.collection('Saves').document(widget.recipe.id+'_'+user.uid).get()).exists;
+    setState(() {
+      widget.recipe.isSaved = isSaved;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    this.loadSaveAndLikeData();
   }
 
   @override
@@ -270,7 +300,7 @@ class _RecipePageState extends State<RecipePage> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Like(recipe: widget.recipe),
-                                  BMark(),
+                                  BMark(recipe: widget.recipe),
                                 ],
                               ),
                               Row(

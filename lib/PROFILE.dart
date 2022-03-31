@@ -12,6 +12,7 @@ import 'package:salmagrad/SEARCH.dart';
 import 'package:salmagrad/Saved%20Recipe.dart';
 import 'package:salmagrad/main.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:salmagrad/SIGN UP.dart';
 
 class Profile extends StatefulWidget {
   Profile({
@@ -21,47 +22,69 @@ class Profile extends StatefulWidget {
 
   final String username;
   final String email;
+
   @override
   _ProfileState createState() => _ProfileState();
 }
 
 class _ProfileState extends State<Profile> {
   var _firebase = Firestore.instance;
-  var initialIndex= 0;
+  var initialIndex = 0;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   String username;
-  String email ;
+  String email;
+
   String id;
   String imageurl;
+  var savedRecipes = <Recipe>[];
   final FirebaseAuth auth = FirebaseAuth.instance;
-  void getCurrentUser()async {
-    final FirebaseUser  user = await auth.currentUser();
+
+  Future<void> getCurrentUser() async {
+    final FirebaseUser user = await auth.currentUser();
     id = user.uid.toString();
     username = user.displayName.toString();
     email = user.email.toString();
 
     print('username = $username  ... id = $id  ... email = $email');
 
-
     // here you write the codes to input the data into firestore
   }
+
+  Future<void> getSavedRecipes() async {
+    var recipesIds = (await Firestore.instance
+            .collection('Saves')
+            .where('userID', isEqualTo: this.id)
+            .getDocuments())
+        .documents
+        .map((doc) => doc.data['recipeID']);
+
+    savedRecipes = [];
+    for (var recipeId in recipesIds) {
+      savedRecipes.add(new Recipe.FS(await Firestore.instance
+          .collection('Recipes')
+          .document(recipeId)
+          .get()));
+    }
+  }
+
+  Future<void> loadData() async {
+    await getCurrentUser();
+    await getSavedRecipes();
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    getCurrentUser();
-
-
+    loadData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body:StreamBuilder<QuerySnapshot>(
-        stream: _firebase
-            .collection('/Users/')
-            .snapshots(),
-        builder: (context, message)
-        {
+      body: StreamBuilder<QuerySnapshot>(
+        stream: _firebase.collection('/Users/').snapshots(),
+        builder: (context, message) {
           if (!message.hasData) {
             return Center(child: CircularProgressIndicator());
           }
@@ -69,23 +92,19 @@ class _ProfileState extends State<Profile> {
           _firebase.collection("Users").getDocuments().then((querySnapshot) {
             querySnapshot.documents.forEach((doc) {
               var id = doc.documentID;
-              if(doc.data['email'] == email) {
-
-                  username = doc.data['username'];
-                  imageurl =doc.data['imageurl'];
-                  print(username);
-
+              if (doc.data['email'] == email) {
+                username = doc.data['username'];
+                imageurl = doc.data['imageurl'];
+                print(username);
 
                 // randomly generated document ID
                 var data = doc.data;
               }
 
-
               // key-value pairs from the document
             });
             setState(() {
-              print('////////////////////////////// image = $imageurl');
-
+              // print('////////////////////////////// image = $imageurl');
             });
           });
           return SingleChildScrollView(
@@ -102,15 +121,17 @@ class _ProfileState extends State<Profile> {
                         borderRadius: BorderRadius.circular(150),
                       ),
                       elevation: 30,
-                      child:(imageurl == null)? CircleAvatar(
-                        radius: 50.0,
-                        backgroundColor: Colors.black12,
-                        backgroundImage:AssetImage('assets/1.jpeg'),
-                      ):CircleAvatar(
-                        radius: 50.0,
-                        backgroundColor: Colors.black12,
-                        backgroundImage:NetworkImage(imageurl),
-                      ),
+                      child: (imageurl == null)
+                          ? CircleAvatar(
+                              radius: 50.0,
+                              backgroundColor: Colors.black12,
+                              backgroundImage: AssetImage('assets/1.jpeg'),
+                            )
+                          : CircleAvatar(
+                              radius: 50.0,
+                              backgroundColor: Colors.black12,
+                              backgroundImage: NetworkImage(imageurl),
+                            ),
                     ),
                     SizedBox(
                       width: 10,
@@ -210,17 +231,13 @@ class _ProfileState extends State<Profile> {
                   height: 20,
                 ),
                 (initialIndex == 0)
-                    ? Saved_recipes()
+                    ? Saved_recipes(savedRecipes: this.savedRecipes)
                     : My_recipes(),
               ],
             ),
           );
         },
       ),
-
-
-
-
     );
   }
 }

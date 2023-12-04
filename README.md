@@ -1,4 +1,4 @@
-# salmagrad
+# Grad Project
 
 A new Flutter application.
 
